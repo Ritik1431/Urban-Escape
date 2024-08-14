@@ -1,13 +1,15 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Listing = require("../Urban Escape/models/listing")
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema} = require("/schema.js")
+const session = require("express-session");
+const flash = require("connect-flash");
+
+const listings = require("./routes/listing.js")
+const reviews = require("./routes/review.js")
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -18,79 +20,53 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/urbanescape";
 main()
-    .then(() => {
-        console.log("Connected to DB");
-    })
-    .catch(err => console.log(err));
+  .then(() => {
+    console.log("Connected to DB");
+  })
+  .catch((err) => console.log(err));
 
 async function main() {
-    await mongoose.connect(MONGO_URL);
+  await mongoose.connect(MONGO_URL);
 }
 
+
+const sessionOptions = {
+  secret: "mysuperseceretcode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly : true,
+  }
+}
 // Root Route
-
 app.get("/", (req, res) => {
-    console.log("hello i am root");
-    res.send("Hi i am root")
-})
-// Index Route
-app.get("/listings", wrapAsync(async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("./listings/index.ejs", { allListings });
-}));
-
-// New Route
-app.get("/listings/new", (req, res) => {
-    res.render("./listings/new.ejs");
-})
-
-// Show ROute
-app.get("/listings/:id", wrapAsync( async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("./listings/show.ejs", { listing })
-}));
-
-// Create Route 
-app.post("/listings", wrapAsync(async (req, res, next) => {
-
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    res.redirect("/listings");
-}));
-
-// Edit Route
-app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("./listings/edit.ejs", { listing });
-}));
-//Update
-app.put("/listings/:id", wrapAsync(async (req, res) => {
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send valid data for listing");
-    }
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listings/${ id }`);
-}));
-//Delete
-app.delete("/listings/:id", wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let deletedListing = await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
-    res.redirect("/listings");
-}));
-
-app.all("*",(req,res,next)=>{
-    next(new ExpressError(404,"Page not found"));
-})
-app.use((err, req, res, next) => {
-    let {statusCode , message} = err;
-    res.render("error.ejs" ,{err});
-    // res.status(statusCode).send(message);
+  console.log("hello i am root");
+  res.send("Hi i am root");
 });
 
-app.listen(8080, () => {
-    console.log("app is listening to port : 8080");
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
 })
+app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews);
+
+app.all("*", (req, res, next) => {
+  next(new ExpressError(404, "Page not found"));
+});
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  const { statusCode = 500, message = "Something went wrong!" } = err;
+  res.status(statusCode).render("error.ejs", { err });
+});
+
+
+app.listen(8080, () => {
+  console.log("app is listening to port : 8080");
+});
