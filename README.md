@@ -36,7 +36,7 @@ This project is a full-stack hotel booking website, designed to provide users wi
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Ritik1431/Urban-Escape
+   git clone git@github.com:Ritik1431/Urban-Escape.git
    cd hotel-booking-website
    ```
 
