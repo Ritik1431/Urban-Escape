@@ -11,11 +11,11 @@
     />
     <div class="card-body mt-2">
       <p class="card-text mt-1">
-        <%= listing.description %> <br />
-        <b>&#8377;<%=listing.price.toLocaleString("en-IN") %> / Night </b>
-        <br /><br />
-        <%= listing.location %> <br />
-        <%= listing.country %>
+        <p><i>Owned by <%= listing.owner.username %></i></p>
+        <p><%= listing.description %> <br /></p>
+        <p><b>&#8377;<%=listing.price.toLocaleString("en-IN") %> / Night </b></p>
+        <p><%= listing.location %> <br /></p>
+        <p><%= listing.country %></p>
       </p>
     </div>
   </div>
