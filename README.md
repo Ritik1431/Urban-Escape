@@ -6,7 +6,7 @@ Here’s a README file for your hotel booking website project:
 
 ## Overview
 
-This project is a full-stack hotel booking website, designed to provide users with a seamless experience for browsing, booking, and reviewing hotels. The application integrates a RESTful backend with a responsive frontend, ensuring scalability, maintainability, and a user-friendly interface.
+This project is a full-stack hotel booking website designed using MVC framwork, designed to provide users with a seamless experience for browsing, booking, and reviewing hotels. The application integrates a RESTful backend with a responsive frontend, ensuring scalability, maintainability, and a user-friendly interface.
 
 ## Features
 
