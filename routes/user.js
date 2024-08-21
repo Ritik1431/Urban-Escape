@@ -7,27 +7,24 @@ const flash = require("connect-flash");
 const { saveRedirectUrl } = require("../middleware");
 const userController = require("../controllers/user")
 
-router.get("/signup", (req, res) => {
-  res.render("users/signup.ejs");
-});
+router.route("/signup")
+  .get(
+    userController.renderSignUp)
+  .post(
+    wrapAsync(userController.userSignUp)
+  );
 
-router.post(
-  "/signup",
-  wrapAsync(userController.userSignUp)
-);
-
-router.get("/login", userController.renderLogin);
-
-
-router.post(
-  "/login",
-  saveRedirectUrl,
+router
+  .route("/login")
+  .get(userController.renderLogin)
+  .post(
+    saveRedirectUrl,
     passport.authenticate("local", {
-        failureRedirect: "/login",
-        failureFlash: true,
+      failureRedirect: "/login",
+      failureFlash: true,
     }),
-  userController.Login
-);
+    userController.Login
+  );
 
 router.get("/logout", userController.logOut)
 module.exports = router;

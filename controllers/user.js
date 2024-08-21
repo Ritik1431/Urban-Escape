@@ -35,3 +35,6 @@ module.exports.logOut = (req, res, next) => {
         res.redirect("listings");
     })
 }
+module.exports.renderSignUp = (req, res) => {
+    res.render("users/signup.ejs");
+}
