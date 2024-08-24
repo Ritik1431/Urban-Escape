@@ -6,7 +6,7 @@
       </h3>
     </div>
     <div class="card col-6 offset-3 show-card listing-card">
-      <img src="<%= listing.image %>" class="card-img-top show-img" alt="Listing_image" />
+      <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="Listing_image" />
       <div class="card-body mt-2">
         <p class="card-text mt-1">
         <p><i>Owned by <%= listing.owner.username %></i></p>
@@ -40,10 +40,6 @@
             <hr />
             <h4>Leave a review</h4>
             <form action="/listings/<%= listing.id %>/reviews" method="post" novalidate class="needs-validation">
-              <!-- <div class="">
-                <label class="form-label" for="rating">Rating</label>
-                <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]" />
-              </div> -->
               <div class="mb-3 mt-3">
                 <label class="form-label " for="rating">Rating</label>
                 <fieldset class="starability-slot  ">
