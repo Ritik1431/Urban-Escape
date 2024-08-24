@@ -12,6 +12,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
@@ -29,15 +30,29 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/urbanescape";
+// const MONGO_URL = "mongodb://127.0.0.1:27017/urbanescape";
+
+const dbUrl = process.env.ATLASDB_URL;
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
+  await mongoose.connect(dbUrl);
   console.log("Connected to DB");
 }
 main().catch((err) => console.log(err));
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: "mysuperseceretcode",
+
+  },
+  touchAfter: 24 * 3600,
+});
+store.on("error", (err) => {
+  console.log("ERROR in MONGO SESSION STORE" , err);
+})
 const sessionOptions = {
+  store,
   secret: "mysuperseceretcode",
   resave: false,
   saveUninitialized: true,
@@ -47,6 +62,7 @@ const sessionOptions = {
     httpOnly: true,
   },
 };
+
 
 app.use(session(sessionOptions));
 app.use(flash());
