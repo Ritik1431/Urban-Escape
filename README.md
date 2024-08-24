@@ -3,6 +3,7 @@ Here’s a README file for your hotel booking website project:
 ---
 
 # Hotel Booking Website
+Deployed link - https://urban-escape-bpld.onrender.com/listings
 
 ## Overview
 
